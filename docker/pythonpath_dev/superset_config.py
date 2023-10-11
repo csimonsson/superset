@@ -25,6 +25,7 @@ import os
 
 from celery.schedules import crontab
 from flask_caching.backends.filesystemcache import FileSystemCache
+from flask_appbuilder.security.manager import AUTH_DB,AUTH_LDAP
 
 logger = logging.getLogger()
 
@@ -40,6 +41,29 @@ EXAMPLES_PASSWORD = os.getenv("EXAMPLES_PASSWORD")
 EXAMPLES_HOST = os.getenv("EXAMPLES_HOST")
 EXAMPLES_PORT = os.getenv("EXAMPLES_PORT")
 EXAMPLES_DB = os.getenv("EXAMPLES_DB")
+
+AUTH_TYPE = AUTH_LDAP
+AUTH_LDAP_SERVER = os.getenv("AUTH_LDAP_SERVER")
+AUTH_LDAP_VERSION = 3
+AUTH_LDAP_TLS_INSECURE = True 
+
+# registration configs
+AUTH_USER_REGISTRATION = True  # allow users who are not already in the FAB DB
+AUTH_USER_REGISTRATION_ROLE = os.getenv("AUTH_LDAP_SERVER")  # this role will be given in addition to any AUTH_ROLES_MAPPING
+AUTH_LDAP_FIRSTNAME_FIELD = "givenName"
+AUTH_LDAP_LASTNAME_FIELD = "sn"
+AUTH_LDAP_EMAIL_FIELD = "mail"  # if null in LDAP, email is set to: "{username}@email.notfound"
+
+AUTH_LDAP_BIND_USER = os.getenv("AUTH_LDAP_BIND_USER")
+AUTH_LDAP_BIND_PASSWORD = os.getenv("AUTH_LDAP_BIND_PASSWORD")
+AUTH_LDAP_ALLOW_SELF_SIGNED = True
+
+# bind username (for password validation)
+AUTH_LDAP_USERNAME_FORMAT = "sAMAccountName=%s"  # %s is replaced with the provided username
+
+# search configs
+AUTH_LDAP_SEARCH = os.getenv("AUTH_LDAP_SEARCH")  # the LDAP search base (if non-empty, a search will ALWAYS happen)
+AUTH_LDAP_UID_FIELD = "sAMAccountName"  # the username field
 
 # The SQLAlchemy connection string.
 SQLALCHEMY_DATABASE_URI = (
