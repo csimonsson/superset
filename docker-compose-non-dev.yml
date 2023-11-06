@@ -23,13 +23,13 @@ x-superset-volumes:
   - ./docker:/app/docker
   - superset_home:/app/superset_home
 
-# x-common-variables: &common-variables
-#   SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-#   AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-#   AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-#   AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-#   AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-#   AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+x-common-variables: &common-variables
+  SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
+  AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
+  AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
+  AUTH_LDAP_BIND_USER: CN=Ldap_superset,OU=Service Account,OU=Users,OU=Global,DC=parajett,DC=local
+  AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
+  AUTH_LDAP_SEARCH: DC=parajett,DC=local
 
 version: "3.7"
 services:
@@ -42,13 +42,7 @@ services:
 
   db:
     env_file: stack.env
-    environment:
-      - SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-      - AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-      - AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-      - AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-      - AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-      - AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+    environment: *common-variables
     image: postgres:15
     container_name: superset_db
     restart: unless-stopped
@@ -58,13 +52,7 @@ services:
 
   superset:
     env_file: stack.env
-    environment:
-      - SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-      - AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-      - AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-      - AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-      - AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-      - AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+    environment: *common-variables
     image: *superset-image
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
@@ -80,13 +68,7 @@ services:
     container_name: superset_init
     command: ["/app/docker/docker-init.sh"]
     env_file: stack.env
-    environment:
-      - SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-      - AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-      - AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-      - AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-      - AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-      - AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+    environment: *common-variables
     depends_on: *superset-depends-on
     user: "root"
     volumes: *superset-volumes
@@ -98,13 +80,7 @@ services:
     container_name: superset_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file: stack.env
-    environment:
-      - SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-      - AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-      - AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-      - AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-      - AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-      - AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+    environment: *common-variables
     restart: unless-stopped
     depends_on: *superset-depends-on
     user: "root"
@@ -121,13 +97,7 @@ services:
     container_name: superset_worker_beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file: stack.env
-    environment:
-      - SUPERSET_SECRET_KEY: ${SUPERSET_SECRET_KEY}
-      - AUTH_LDAP_SERVER: ${AUTH_LDAP_SERVER}
-      - AUTH_USER_REGISTRATION_ROLE: ${AUTH_USER_REGISTRATION_ROLE}
-      - AUTH_LDAP_BIND_USER: ${AUTH_LDAP_BIND_USER}
-      - AUTH_LDAP_BIND_PASSWORD: ${AUTH_LDAP_BIND_PASSWORD}
-      - AUTH_LDAP_SEARCH: ${AUTH_LDAP_SEARCH}
+    environment: *common-variables
     restart: unless-stopped
     depends_on: *superset-depends-on
     user: "root"
